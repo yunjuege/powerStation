@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(pfr_domain
     src/domain/Types.cpp
+    src/domain/TopologyRegistry.cpp
 )
 
 target_include_directories(pfr_domain
@@ -53,5 +54,38 @@ if(BUILD_TESTING)
     add_test(
         NAME domain_tests
         COMMAND pfr_domain_tests
+    )
+
+    add_executable(pfr_topology_tests
+        tests/topology_registry_tests.cpp
+    )
+
+    target_link_libraries(pfr_topology_tests
+        PRIVATE
+            pfr_domain
+    )
+
+    if(MSVC)
+        target_compile_options(
+            pfr_topology_tests
+            PRIVATE /W4 /permissive- /utf-8
+        )
+    else()
+        target_compile_options(
+            pfr_topology_tests
+            PRIVATE -Wall -Wextra -Wpedantic
+        )
+    endif()
+
+    add_test(
+        NAME topology_registry_tests
+        COMMAND pfr_topology_tests
+    )
+
+    set_tests_properties(
+    domain_tests
+    topology_registry_tests
+    PROPERTIES
+        TIMEOUT 10
     )
 endif()
