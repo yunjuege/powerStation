@@ -33,6 +33,32 @@ else()
     target_compile_options(pfr_grid_terminal PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+add_library(pfr_compute
+    src/compute/UnitRealtimeProcessor.cpp
+)
+
+target_include_directories(pfr_compute
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(pfr_compute
+    PUBLIC
+        pfr_domain
+)
+
+if(MSVC)
+    target_compile_options(
+        pfr_compute
+        PRIVATE /W4 /permissive- /utf-8
+    )
+else()
+    target_compile_options(
+        pfr_compute
+        PRIVATE -Wall -Wextra -Wpedantic
+    )
+endif()
+
 include(CTest)
 
 if(BUILD_TESTING)
@@ -87,5 +113,37 @@ if(BUILD_TESTING)
     topology_registry_tests
     PROPERTIES
         TIMEOUT 10
+    )
+
+    add_executable(pfr_unit_realtime_tests
+    tests/unit_realtime_processor_tests.cpp
+)
+
+    target_link_libraries(pfr_unit_realtime_tests
+        PRIVATE
+            pfr_compute
+    )
+
+    if(MSVC)
+        target_compile_options(
+            pfr_unit_realtime_tests
+            PRIVATE /W4 /permissive- /utf-8
+        )
+    else()
+        target_compile_options(
+            pfr_unit_realtime_tests
+            PRIVATE -Wall -Wextra -Wpedantic
+        )
+    endif()
+
+    add_test(
+        NAME unit_realtime_processor_tests
+        COMMAND pfr_unit_realtime_tests
+    )
+
+    set_tests_properties(
+        unit_realtime_processor_tests
+        PROPERTIES
+            TIMEOUT 10
     )
 endif()
