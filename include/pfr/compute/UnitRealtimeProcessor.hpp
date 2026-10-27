@@ -18,7 +18,8 @@ enum class SampleDecision : std::uint8_t
     Duplicate,
     OutOfOrder,
     IdentityMismatch,
-    Invalid
+    Invalid,
+    UnknownUnit
 };
 
 struct UnitRealtimeSnapshot

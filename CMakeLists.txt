@@ -35,6 +35,7 @@ endif()
 
 add_library(pfr_compute
     src/compute/UnitRealtimeProcessor.cpp
+    src/compute/ShardedComputeEngine.cpp
 )
 
 target_include_directories(pfr_compute
@@ -116,8 +117,8 @@ if(BUILD_TESTING)
     )
 
     add_executable(pfr_unit_realtime_tests
-    tests/unit_realtime_processor_tests.cpp
-)
+        tests/unit_realtime_processor_tests.cpp
+    )
 
     target_link_libraries(pfr_unit_realtime_tests
         PRIVATE
@@ -145,5 +146,37 @@ if(BUILD_TESTING)
         unit_realtime_processor_tests
         PROPERTIES
             TIMEOUT 10
+    )
+
+    add_executable(pfr_sharded_compute_tests
+        tests/sharded_compute_engine_tests.cpp
+    )
+
+    target_link_libraries(pfr_sharded_compute_tests
+        PRIVATE
+            pfr_compute
+    )
+
+    if(MSVC)
+        target_compile_options(
+            pfr_sharded_compute_tests
+            PRIVATE /W4 /permissive- /utf-8
+        )
+    else()
+        target_compile_options(
+            pfr_sharded_compute_tests
+            PRIVATE -Wall -Wextra -Wpedantic
+        )
+    endif()
+
+    add_test(
+        NAME sharded_compute_engine_tests
+        COMMAND pfr_sharded_compute_tests
+    )
+
+    set_tests_properties(
+        sharded_compute_engine_tests
+        PROPERTIES
+            TIMEOUT 15
     )
 endif()
