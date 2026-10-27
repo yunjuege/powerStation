@@ -1,5 +1,5 @@
 # CMake构建目录
-/build/
+/build*/
 /out/
 
 # C/C++编译产物
