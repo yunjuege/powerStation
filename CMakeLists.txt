@@ -36,6 +36,7 @@ endif()
 add_library(pfr_compute
     src/compute/UnitRealtimeProcessor.cpp
     src/compute/ShardedComputeEngine.cpp
+    src/compute/RealtimeAggregator.cpp
 )
 
 target_include_directories(pfr_compute
@@ -178,5 +179,37 @@ if(BUILD_TESTING)
         sharded_compute_engine_tests
         PROPERTIES
             TIMEOUT 15
+    )
+
+    add_executable(pfr_realtime_aggregator_tests
+        tests/realtime_aggregator_tests.cpp
+    )
+
+    target_link_libraries(pfr_realtime_aggregator_tests
+        PRIVATE
+            pfr_compute
+    )
+
+    if(MSVC)
+        target_compile_options(
+            pfr_realtime_aggregator_tests
+            PRIVATE /W4 /permissive- /utf-8
+        )
+    else()
+        target_compile_options(
+            pfr_realtime_aggregator_tests
+            PRIVATE -Wall -Wextra -Wpedantic
+        )
+    endif()
+
+    add_test(
+        NAME realtime_aggregator_tests
+        COMMAND pfr_realtime_aggregator_tests
+    )
+
+    set_tests_properties(
+        realtime_aggregator_tests
+        PROPERTIES
+            TIMEOUT 10
     )
 endif()
